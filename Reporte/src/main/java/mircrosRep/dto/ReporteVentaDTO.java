@@ -3,8 +3,9 @@ import lombok.Data;
 
 @Data
 public class ReporteVentaDTO {
-    private String sucursal;
-    private double totalVentas;
-    private int cantidadVentas;
+    private int idVenta;
+    private int idSucursal;
+    private double totalVenta;
+    private String fechaVenta;
 }
 

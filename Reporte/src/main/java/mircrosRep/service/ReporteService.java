@@ -1,39 +1,33 @@
 package mircrosRep.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import mircrosRep.dto.ReporteVentaDTO;
 import mircrosRep.dto.VentaDTO;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ReporteService {
 
-    private final RestTemplate restTemplate;
+    @Autowired
+    private RestTemplate restTemplate;
 
-    public ReporteService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+    private final String VENTAS_URL = "http://localhost:8040/api/ventas";
+    //trae los reportes de una venta de una sucursal
+    public List<VentaDTO> obtenerVentasPorSucursal(int idSucursal) {
+        String url = VENTAS_URL + "?sucursal=" + idSucursal; 
 
-    public List<ReporteVentaDTO> obtenerVentasTotales() {
-        VentaDTO[] ventas = restTemplate.getForObject("http://localhost:8082/api/ventas", VentaDTO[].class);
+        VentaDTO[] ventasArray = restTemplate.getForObject(url, VentaDTO[].class);
 
-        ReporteVentaDTO resumen = new ReporteVentaDTO();
-        resumen.setSucursal("General");
-        resumen.setCantidadVentas(ventas.length);
-
-        double total = 0;
-        for (VentaDTO venta : ventas) {
-            total += venta.getTotalVenta();
+        if (ventasArray == null) {
+            throw new RuntimeException("No se pudieron obtener las ventas de la sucursal ID: " + idSucursal);
         }
 
-        resumen.setTotalVentas(total);
-
-        return List.of(resumen);
-}
-
-
+        return Arrays.stream(ventasArray)
+                .filter(v -> v.getIdSucursal() == idSucursal)
+                .collect(Collectors.toList());
+    }
 }
 

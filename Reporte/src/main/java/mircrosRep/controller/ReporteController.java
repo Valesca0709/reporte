@@ -1,8 +1,9 @@
 package mircrosRep.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import mircrosRep.dto.ReporteVentaDTO;
+import mircrosRep.dto.VentaDTO;
 import mircrosRep.service.ReporteService;
 
 import java.util.List;
@@ -11,16 +12,12 @@ import java.util.List;
 @RequestMapping("/api/reportes")
 public class ReporteController {
 
-    private final ReporteService reporteService;
+    @Autowired
+    private ReporteService reporteService;
 
-    public ReporteController(ReporteService reporteService) {
-        this.reporteService = reporteService;
+    @GetMapping("/sucursal/{idSucursal}")
+    public ResponseEntity<List<VentaDTO>> obtenerReportePorSucursal(@PathVariable int idSucursal) {
+        List<VentaDTO> reporte = reporteService.obtenerVentasPorSucursal(idSucursal);
+        return ResponseEntity.ok(reporte);
     }
-
-    @GetMapping("/ventas-totales")
-    public List<ReporteVentaDTO> ventasTotales() {
-        return reporteService.obtenerVentasTotales();
-    }
-
 }
-
